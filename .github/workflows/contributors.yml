@@ -1,0 +1,105 @@
+name: Update Contributors
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+
+jobs:
+  update-contributors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install all-contributors-cli
+        run: npm install -g all-contributors-cli
+
+      - name: Update Contributors
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          # Get all contributors from git history
+          CONTRIBUTORS=$(git log --format='%aN <%aE>' | sort -u)
+          
+          # Add each contributor
+          while IFS= read -r contributor; do
+            EMAIL=$(echo "$contributor" | cut -d '<' -f2 | cut -d '>' -f1)
+            
+            # Use GitHub API to get username with authentication
+            USERNAME=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/search/users?q=$EMAIL" \
+              | jq -r '.items[0].login // empty')
+            
+            if [ ! -z "$USERNAME" ]; then
+              # Check contribution types from commit history
+              COMMITS=$(git log --author="$EMAIL" --pretty=format:"%s" -i)
+              
+              TYPES="code"  # Default contribution type
+              
+              # Add doc type if they modified documentation
+              if echo "$COMMITS" | grep -iqE "docs|documentation|readme"; then
+                TYPES="$TYPES,doc"
+              fi
+              
+              # Add bug type if they fixed bugs
+              if echo "$COMMITS" | grep -iqE "fix|bug|issue|resolve"; then
+                TYPES="$TYPES,bug"
+              fi
+              
+              # Check PR reviews
+              REVIEWS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/reviews?author=$USERNAME" \
+                | jq length)
+              
+              if [ "$REVIEWS" -gt "0" ]; then
+                TYPES="$TYPES,review"
+              fi
+              
+              # Add contributor with detected types
+              echo "Adding $USERNAME with types: $TYPES"
+              all-contributors add "$USERNAME" "$TYPES" || true
+            fi
+          done <<< "$CONTRIBUTORS"
+          
+          # Generate contributors table
+          all-contributors generate
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'docs: update contributors'
+          title: 'docs: update contributors'
+          body: |
+            🤖 Automatically updated contributors list
+            
+            This PR:
+            - Updates the contributors table in README.md
+            - Adds new contributors with their contribution types
+            - Detects contribution types based on commit history and PR reviews
+            
+            Types of contributions detected:
+            - 💻 Code: General code contributions
+            - 📖 Documentation: README and docs changes
+            - ⚠️ Tests: Test additions/modifications
+            - 🐛 Bug fixes: Issue resolutions
+            - 👀 Reviews: PR reviews
+          branch: update-contributors
+          delete-branch: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
+  pull-requests: write 
