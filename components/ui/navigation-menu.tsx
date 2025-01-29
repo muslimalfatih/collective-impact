@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ScanFace, Menu, X } from "lucide-react";
+import { ConnectButton } from "@connect2ic/react";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,8 @@ export const Navigation = () => {
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
+
+      <ConnectButton />
 
       <Link
         href="#"

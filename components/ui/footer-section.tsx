@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Footer() {
@@ -23,13 +21,6 @@ export default function Footer() {
                 placeholder="Enter your email"
                 className="pr-12 backdrop-blur-sm"
               />
-              <Button
-                type="submit"
-                size="icon"
-                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-neutral-900 text-neutral-50 transition-transform hover:scale-105 dark:bg-neutral-50 dark:text-neutral-900"
-              >
-                <span className="sr-only">Subscribe</span>
-              </Button>
             </form>
             <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-neutral-900/10 blur-2xl dark:bg-neutral-50/10" />
           </div>
@@ -67,12 +58,6 @@ export default function Footer() {
                 Contact
               </a>
             </nav>
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
-            <address className="space-y-2 text-sm not-italic">
-              <p>TEST</p>
-            </address>
           </div>
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">

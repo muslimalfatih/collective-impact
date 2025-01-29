@@ -26,12 +26,13 @@ export default function Home() {
             icon: <ScrollText className="h-4 w-4" />,
           },
           secondaryAction: {
-            href: "#",
+            href: "/campaign",
             text: "Browse Campaign",
             icon: <ArrowUpRight className="h-4 w-4" />,
           },
         }}
       />
+      <div></div>
       <section className="container mx-auto my-10 px-4 md:px-8 lg:px-12">
         <h1 className="text-3xl font-bold mb-10">
           A Trustless, Community-Driven Future
