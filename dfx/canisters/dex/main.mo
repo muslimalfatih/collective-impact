@@ -1,91 +1,186 @@
-import Types "types";
-import Principal "mo:base/Principal";
+import List "mo:base/List";
 import HashMap "mo:base/HashMap";
-import Error "mo:base/Error";
-import Debug "mo:base/Debug";
-import Text "mo:base/Text";
-import Nat "mo:base/Nat";
+import Hash "mo:base/Hash";
 import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
+import Principal "mo:base/Principal";
 
-actor class DEX() {
-  type Pool = Types.Pool;
-  type SwapParams = Types.SwapParams;
-  type AddLiquidityParams = Types.AddLiquidityParams;
-  type Balance = Nat;
+actor CollectiveImpact {
 
-  private stable var poolEntries : [(Text, Pool)] = [];
-  private var pools = HashMap.fromIter<Text, Pool>(poolEntries.vals(), 10, Text.equal, Text.hash);
+  // Enum untuk tipe pembuat campaign
+  type CreatorType = {
+    #Individual;
+    #Fundraiser;
+  };
 
+  // Struktur data Campaign
+  type Campaign = {
+    id : Nat;
+    title : Text;
+    description : Text;
+    targetAmount : Nat;
+    currentAmount : Nat;
+    creator : Principal;
+    creatorType : CreatorType;
+  };
+
+  // Struktur data Fundraiser (Organisasi)
+  type Fundraiser = {
+    id : Principal;
+    name : Text;
+    campaigns : List.List<Nat>;
+  };
+
+  // Struktur data Donor
+  type Donor = {
+    donorId : Principal;
+    amount : Nat;
+  };
+
+  // 🔥 STABLE VAR: Simpan campaign dalam List karena HashMap tidak bisa dibuat stable langsung
+  stable var campaignData : [(Nat, Campaign)] = [];
+
+  // 🔥 NON-STABLE: HashMap untuk akses cepat di runtime
+  var campaigns = HashMap.HashMap<Nat, Campaign>(0, Nat.equal, Hash.hash);
+
+  stable var fundraiserData : [(Principal, Fundraiser)] = [];
+  var fundraisers = HashMap.HashMap<Principal, Fundraiser>(0, Principal.equal, Principal.hash);
+
+  stable var donationData : [(Nat, List.List<Donor>)] = [];
+  var donations = HashMap.HashMap<Nat, List.List<Donor>>(0, Nat.equal, Hash.hash);
+
+  stable var campaignCounter : Nat = 0;
+
+  // 🔥 Saat canister mulai, load data dari stable storage ke HashMap
   system func preupgrade() {
-    poolEntries := Iter.toArray(pools.entries());
+    campaignData := Iter.toArray(campaigns.entries());
+    fundraiserData := Iter.toArray(fundraisers.entries());
+    donationData := Iter.toArray(donations.entries());
   };
 
   system func postupgrade() {
-    poolEntries := [];
+    campaigns := HashMap.fromIter<Nat, Campaign>(Iter.fromArray(campaignData), 0, Nat.equal, Hash.hash);
+    fundraisers := HashMap.fromIter<Principal, Fundraiser>(Iter.fromArray(fundraiserData), 0, Principal.equal, Principal.hash);
+    donations := HashMap.fromIter<Nat, List.List<Donor>>(Iter.fromArray(donationData), 0, Nat.equal, Hash.hash);
   };
 
-  // Creates a new liquidity pool
-  public shared(msg) func createPool(token0: Principal, token1: Principal) : async Text {
-    let poolId = createPoolId(token0, token1);
-    
-    switch (pools.get(poolId)) {
-      case (?_) { throw Error.reject("Pool already exists") };
-      case null {
-        let newPool: Pool = {
-          token0 = token0;
-          token1 = token1;
-          reserve0 = 0;
-          reserve1 = 0;
-          totalShares = 0;
+  // ✅ Membuat Campaign (untuk Individu & Fundraiser)
+  public func createCampaign(
+    title : Text,
+    description : Text,
+    targetAmount : Nat,
+    creatorType : CreatorType,
+  ) : async Nat {
+    let caller = Principal.fromActor(CollectiveImpact);
+    campaignCounter += 1;
+
+    let newCampaign : Campaign = {
+      id = campaignCounter;
+      title = title;
+      description = description;
+      targetAmount = targetAmount;
+      currentAmount = 0;
+      creator = caller;
+      creatorType = creatorType;
+    };
+
+    campaigns.put(campaignCounter, newCampaign);
+
+    // Jika pembuat adalah Fundraiser, tambahkan ke daftar campaign mereka
+    switch creatorType {
+      case (#Fundraiser) {
+        let fundraiserEntry = fundraisers.get(caller);
+        switch fundraiserEntry {
+          case (?fundraiser) {
+            let updatedFundraiser = {
+              id = fundraiser.id;
+              name = fundraiser.name;
+              campaigns = List.push(campaignCounter, fundraiser.campaigns);
+            };
+            fundraisers.put(caller, updatedFundraiser);
+          };
+          case null {
+            let newFundraiser = {
+              id = caller;
+              name = "Unknown Fundraiser";
+              campaigns = List.push(campaignCounter, List.nil<Nat>());
+            };
+            fundraisers.put(caller, newFundraiser);
+          };
         };
-        pools.put(poolId, newPool);
-        return poolId;
       };
+      case (#Individual) {}; // Tidak perlu menyimpan list campaign untuk individu
+    };
+
+    return campaignCounter;
+  };
+
+  // ✅ Donasi ke campaign
+  public func donateToCampaign(campaignId : Nat, amount : Nat) : async Bool {
+    let caller = Principal.fromActor(CollectiveImpact);
+
+    switch (campaigns.get(campaignId)) {
+      case (?campaign) {
+        let updatedCampaign = {
+          id = campaign.id;
+          title = campaign.title;
+          description = campaign.description;
+          targetAmount = campaign.targetAmount;
+          currentAmount = campaign.currentAmount + amount;
+          creator = campaign.creator;
+          creatorType = campaign.creatorType;
+        };
+        campaigns.put(campaignId, updatedCampaign);
+
+        let donor : Donor = { donorId = caller; amount = amount };
+
+        let donorList = donations.get(campaignId);
+        let updatedDonorList = switch donorList {
+          case (?list) List.push(donor, list);
+          case null List.push(donor, List.nil<Donor>());
+        };
+
+        donations.put(campaignId, updatedDonorList);
+        return true;
+      };
+      case null return false;
     };
   };
 
-  // Add liquidity to a pool
-  public shared(msg) func addLiquidity(params: AddLiquidityParams) : async Balance {
-    let poolId = createPoolId(params.token0, params.token1);
-    
-    switch (pools.get(poolId)) {
-      case null { throw Error.reject("Pool does not exist") };
-      case (?pool) {
-        // Implementation for adding liquidity
-        // 1. Transfer tokens from user
-        // 2. Calculate shares to mint
-        // 3. Update pool reserves
-        // 4. Mint LP tokens
-        Debug.print("Adding liquidity to pool: " # poolId);
-        return 0; // Return minted shares
-      };
+  // ✅ Mendapatkan semua campaign
+  public query func getAllCampaigns() : async [Campaign] {
+    Iter.toArray(campaigns.vals());
+  };
+
+  // ✅ Mendapatkan detail campaign berdasarkan ID
+  public query func getCampaign(campaignId : Nat) : async ?Campaign {
+    campaigns.get(campaignId);
+  };
+
+  // ✅ Mendapatkan total donasi terkumpul untuk campaign
+  public query func getTotalDonations(campaignId : Nat) : async Nat {
+    switch (campaigns.get(campaignId)) {
+      case (?campaign) campaign.currentAmount;
+      case null 0;
     };
   };
 
-  // Swap tokens
-  public shared(msg) func swap(params: SwapParams) : async Balance {
-    let poolId = createPoolId(params.tokenIn, params.tokenOut);
-    
-    switch (pools.get(poolId)) {
-      case null { throw Error.reject("Pool does not exist") };
-      case (?pool) {
-        // Implementation for token swap
-        // 1. Calculate amount out
-        // 2. Verify minimum amount out
-        // 3. Transfer tokens
-        // 4. Update pool reserves
-        Debug.print("Executing swap in pool: " # poolId);
-        return 0; // Return amount out
+  // ✅ Mendaftarkan Fundraiser (Organisasi)
+  public func registerFundraiser(name : Text) : async Bool {
+    let caller = Principal.fromActor(CollectiveImpact);
+
+    // Periksa apakah sudah terdaftar
+    switch (fundraisers.get(caller)) {
+      case (?_) return false;
+      case null {
+        let newFundraiser = {
+          id = caller;
+          name = name;
+          campaigns = List.nil<Nat>();
+        };
+        fundraisers.put(caller, newFundraiser);
+        return true;
       };
     };
-  };
-
-  // Helper function to create consistent pool IDs
-  private func createPoolId(token0: Principal, token1: Principal) : Text {
-    if (Principal.compare(token0, token1) == #less) {
-      Principal.toText(token0) # ":" # Principal.toText(token1)
-    } else {
-      Principal.toText(token1) # ":" # Principal.toText(token0)
-    }
   };
 };
