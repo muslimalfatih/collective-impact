@@ -9,7 +9,18 @@
   "imageSize": 100,
   "commit": false,
   "commitConvention": "none",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "dzakybrori",
+      "name": "Dzaky Brori",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30130167?v=4",
+      "profile": "https://dzakybrori.github.io/",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "skipCi": true,
   "types": {
@@ -42,4 +53,4 @@
       "description": "Reviewed Pull Requests"
     }
   }
-} 
+}
