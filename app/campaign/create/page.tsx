@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Select } from "@radix-ui/react-select";
+import { useEffect, useState } from "react";
+import { makeCampaignActor } from "@/service";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -35,9 +35,22 @@ const formSchema = z.object({
   type: z.string({
     message: "Campaign type must be selected",
   }),
+  imageUrl: z.string({
+    message: "Campaign url must be filled.",
+  }),
 });
 
 export default function Page() {
+  const [actor, setActor] = useState<any>(null);
+
+  useEffect(() => {
+    const initActor = async () => {
+      const campaignActor = makeCampaignActor();
+      setActor(campaignActor);
+    };
+    initActor();
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,8 +59,8 @@ export default function Page() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await actor.createCampaign(values.title, values.description, 4);
   }
 
   return (
@@ -101,7 +114,22 @@ export default function Page() {
           />
           <FormField
             control={form.control}
-            name="title"
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image Url</FormLabel>
+                <FormControl>
+                  <FormControl>
+                    <Input placeholder="Input Campaign Url" {...field} />
+                  </FormControl>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="type"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Campaign Type</FormLabel>
@@ -111,12 +139,16 @@ export default function Page() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a verified email to display" />
+                      <SelectValue placeholder="Select campaign type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Individual">Individual</SelectItem>
-                    <SelectItem value="Fundraiser">Fundraiser</SelectItem>
+                    <SelectItem value="variant {Individual}">
+                      Individual
+                    </SelectItem>
+                    <SelectItem value="variant {Fundraiser}">
+                      Fundraiser
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
