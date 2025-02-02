@@ -31,31 +31,34 @@ jobs:
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
-          # Get all contributors from git history
-          CONTRIBUTORS=$(git log --format='%aN <%aE>' | sort -u)
+          # Fetch all contributors from GitHub API
+          CONTRIBUTORS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/contributors" \
+            | jq -r '.[].login')
           
-          # Add each contributor
-          while IFS= read -r contributor; do
-            EMAIL=$(echo "$contributor" | cut -d '<' -f2 | cut -d '>' -f1)
-            
-            # Use GitHub API to get username with authentication
-            USERNAME=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/search/users?q=$EMAIL" \
-              | jq -r '.items[0].login // empty')
-            
+          # Process each contributor
+          while IFS= read -r USERNAME; do
             if [ ! -z "$USERNAME" ]; then
-              # Check contribution types from commit history
-              COMMITS=$(git log --author="$EMAIL" --pretty=format:"%s" -i)
+              # Get user's contributions
+              TYPES="code"  # Default contribution
               
-              TYPES="code"  # Default contribution type
+              # Check commits for documentation changes
+              DOC_COMMITS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits?author=$USERNAME" \
+                | jq -r '.[].commit.message' \
+                | grep -iE "docs|documentation|readme" || true)
               
-              # Add doc type if they modified documentation
-              if echo "$COMMITS" | grep -iqE "docs|documentation|readme"; then
+              if [ ! -z "$DOC_COMMITS" ]; then
                 TYPES="$TYPES,doc"
               fi
               
-              # Add bug type if they fixed bugs
-              if echo "$COMMITS" | grep -iqE "fix|bug|issue|resolve"; then
+              # Check for bug fixes
+              BUG_COMMITS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits?author=$USERNAME" \
+                | jq -r '.[].commit.message' \
+                | grep -iE "fix|bug|issue|resolve" || true)
+              
+              if [ ! -z "$BUG_COMMITS" ]; then
                 TYPES="$TYPES,bug"
               fi
               
