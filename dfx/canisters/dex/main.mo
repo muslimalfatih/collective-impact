@@ -18,6 +18,7 @@ actor CollectiveImpact {
     id : Nat;
     title : Text;
     description : Text;
+    imageUrl : Text;
     targetAmount : Nat;
     currentAmount : Nat;
     creator : Principal;
@@ -68,6 +69,7 @@ actor CollectiveImpact {
   public func createCampaign(
     title : Text,
     description : Text,
+    imageUrl : Text,
     targetAmount : Nat,
     creatorType : CreatorType,
   ) : async Nat {
@@ -78,6 +80,7 @@ actor CollectiveImpact {
       id = campaignCounter;
       title = title;
       description = description;
+      imageUrl = imageUrl;
       targetAmount = targetAmount;
       currentAmount = 0;
       creator = caller;
@@ -125,6 +128,7 @@ actor CollectiveImpact {
           id = campaign.id;
           title = campaign.title;
           description = campaign.description;
+          imageUrl = campaign.imageUrl;
           targetAmount = campaign.targetAmount;
           currentAmount = campaign.currentAmount + amount;
           creator = campaign.creator;
