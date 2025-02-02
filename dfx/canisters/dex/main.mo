@@ -71,10 +71,16 @@ actor CollectiveImpact {
     description : Text,
     imageUrl : Text,
     targetAmount : Nat,
-    creatorType : CreatorType,
+    creatorTypeText : Text,
   ) : async Nat {
     let caller = Principal.fromActor(CollectiveImpact);
     campaignCounter += 1;
+
+    let creatorType = switch creatorTypeText {
+      case ("Individual") #Individual;
+      case ("Fundraiser") #Fundraiser;
+      case _ #Individual;
+    };
 
     let newCampaign : Campaign = {
       id = campaignCounter;
