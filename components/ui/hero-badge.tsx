@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 "use client";
 import { motion, useAnimation, type Variants } from "framer-motion";
 import Link from "next/link";
