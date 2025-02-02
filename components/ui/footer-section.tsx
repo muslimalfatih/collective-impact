@@ -13,7 +13,7 @@ export default function Footer() {
               Stay Connected
             </h2>
             <p className="mb-6 text-neutral-500 dark:text-neutral-400">
-              Join our newsletter for the latest updates and exclusive offers.
+              Join our newsletter for the latest updates.
             </p>
             <form className="relative">
               <Input
@@ -38,18 +38,6 @@ export default function Footer() {
                 className="block transition-colors hover:text-neutral-900 dark:hover:text-neutral-50"
               >
                 About Us
-              </a>
-              <a
-                href="#"
-                className="block transition-colors hover:text-neutral-900 dark:hover:text-neutral-50"
-              >
-                Services
-              </a>
-              <a
-                href="#"
-                className="block transition-colors hover:text-neutral-900 dark:hover:text-neutral-50"
-              >
-                Products
               </a>
               <a
                 href="#"
