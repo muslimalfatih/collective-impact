@@ -76,7 +76,7 @@ export default function Page() {
               <FormItem>
                 <FormLabel>Campaign Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="ex: involve for green tech" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -90,7 +90,7 @@ export default function Page() {
                 <FormLabel>Campaign Description</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Tell us a little bit about yourself"
+                    placeholder="Tell us a little bit about your campaign"
                     className="resize-none"
                     {...field}
                   />
