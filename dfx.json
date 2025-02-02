@@ -4,7 +4,8 @@
       "type": "motoko",
       "main": "dfx/canisters/dex/main.mo",
       "declarations": {
-        "node_compatibility": true
+        "node_compatibility": true,
+        "output": "src/declarations/backend"
       }
     },
     "assets": {
@@ -19,5 +20,17 @@
       ],
       "type": "assets"
     }
-  }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:4943"
+    }
+  },
+  "version": 1
 }

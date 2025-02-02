@@ -35,5 +35,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Add these lines
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 .dfx

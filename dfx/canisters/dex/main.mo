@@ -149,7 +149,8 @@ actor CollectiveImpact {
 
   // ✅ Mendapatkan semua campaign
   public query func getAllCampaigns() : async [Campaign] {
-    Iter.toArray(campaigns.vals());
+    let campaignArray = Iter.toArray(campaigns.vals());
+    return campaignArray;
   };
 
   // ✅ Mendapatkan detail campaign berdasarkan ID
