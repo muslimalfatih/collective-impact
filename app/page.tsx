@@ -1,21 +1,12 @@
 "use client";
 import { Hero } from "@/components/hero";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollText, ArrowUpRight, Stars } from "lucide-react";
 import Card from "@/components/card";
 import { Feature } from "@/constant/feature";
 import Footer from "@/components/ui/footer-section";
-import { makeCampaignActor } from "@/service";
+
 export default function Home() {
-  const onSend = async () => {
-    const campaign = makeCampaignActor();
-    campaign.createCampaign("test", "test", 2);
-  };
-  const onGet = async () => {
-    const campaign = makeCampaignActor();
-    const allcampaign = await campaign.getAllCampaigns();
-    console.log(allcampaign);
-  };
   return (
     <div>
       <Hero
@@ -43,12 +34,6 @@ export default function Home() {
           },
         }}
       />
-      <div>
-        <button className="" onClick={onSend}>
-          Send
-        </button>
-        <button onClick={onGet}>Get</button>
-      </div>
       <section className="container mx-auto my-10 px-4 md:px-8 lg:px-12">
         <h1 className="text-3xl font-bold mb-10">
           A Trustless, Community-Driven Future
