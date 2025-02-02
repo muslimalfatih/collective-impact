@@ -1,0 +1,21 @@
+// Version: 1.0.0
+type Campaign =
+  {
+    creator : Principal;
+    creatorType : CreatorType;
+    currentAmount : Nat;
+    description : Text;
+    id : Nat;
+    targetAmount : Nat;
+    title : Text
+  };
+type CreatorType = {#Fundraiser; #Individual};
+type Donor = {amount : Nat; donorId : Principal};
+type Fundraiser = {campaigns : List<Nat>; id : Principal; name : Text};
+type List<T> = ?(T, List<T>);
+actor {
+  stable var campaignCounter : Nat;
+  stable var campaignData : [(Nat, Campaign)];
+  stable var donationData : [(Nat, List<Donor>)];
+  stable var fundraiserData : [(Principal, Fundraiser)]
+};

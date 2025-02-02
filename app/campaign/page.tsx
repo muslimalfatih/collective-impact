@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import React from "react";
 
-export default function Campaign() {
+export default function Page() {
   return (
     <div className="container mx-auto py-24 px-4 md:px-8 lg:px-12">
       <div className="w-full">

@@ -1,12 +1,23 @@
 {
   "canisters": {
-    "frontend": {
-      "entrypoint": "out/index.html",
+    "backend": {
+      "type": "motoko",
+      "main": "dfx/canisters/dex/main.mo",
+      "declarations": {
+        "node_compatibility": true
+      }
+    },
+    "assets": {
+      "dependencies": [
+        "backend"
+      ],
+      "frontend": {
+        "entrypoint": "out/index.html"
+      },
       "source": [
-        "out"
+        "out/"
       ],
       "type": "assets"
     }
-  },
-  "output_env_file": ".env"
+  }
 }

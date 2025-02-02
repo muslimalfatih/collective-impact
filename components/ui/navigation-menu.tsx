@@ -30,6 +30,16 @@ export const Navigation = () => {
         SignIn
       </Link>
 
+      <Link
+        href="#"
+        className={cn(
+          buttonVariants({ size: "lg", variant: "outline" }),
+          "gap-2 hidden sm:flex justify-center rounded-full font-semibold ml-2",
+        )}
+      >
+        Create Campaign
+      </Link>
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
