@@ -31,7 +31,7 @@ export const Navigation = () => {
       </Link>
 
       <Link
-        href="#"
+        href="/campaign/create"
         className={cn(
           buttonVariants({ size: "lg", variant: "outline" }),
           "gap-2 hidden sm:flex justify-center rounded-full font-semibold ml-2",
