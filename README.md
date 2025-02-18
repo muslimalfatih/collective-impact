@@ -4,6 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Hackathon: ICP](https://img.shields.io/badge/Hackathon-ICP-9cf)](https://dfinity.org/hackathons)
 
+> 🏆 **1st Place Winner - ICP Hackathon 10**  
+> We're proud to announce that Collective Impact won first place in the ICP Hackathon 10! [See announcement](https://www.instagram.com/p/DF2sPoHT3TP/)
+
 **Collective Impact** is a decentralized crowdfunding platform built on the Internet Computer Protocol (ICP) that empowers communities to fund social impact projects, govern decisions via DAO, and earn real-world rewards like volunteer trip access. This project combines **DeFi mechanics**, **DAO governance**, and **transparent impact tracking** for global good.
 
 ## 📖 **Whitepaper & Project Roadmap**
