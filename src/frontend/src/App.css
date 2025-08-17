@@ -1,42 +1,118 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --radius: 0.65rem;
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+  --color-primary: oklch(var(--primary));
+  --color-primary-foreground: oklch(var(--primary-foreground));
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
+  --color-destructive: oklch(var(--destructive));
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+}
+
+:root {
+  --background: 1 0 0;
+  --foreground: 0.141 0.005 285.823;
+  --card: 1 0 0;
+  --card-foreground: 0.141 0.005 285.823;
+  --popover: 1 0 0;
+  --popover-foreground: 0.141 0.005 285.823;
+
+  --primary: 0.9255 0.141 127.02;
+  --primary-foreground: 0.982 0.018 155.826;
+
+  --secondary: 0.967 0.001 286.375;
+  --secondary-foreground: 0.21 0.006 285.885;
+
+  --muted: 0.967 0.001 286.375;
+  --muted-foreground: 0.552 0.016 285.938;
+
+  --accent: 0.967 0.001 286.375;
+  --accent-foreground: 0.21 0.006 285.885;
+
+  --destructive: 0.577 0.245 27.325;
+
+  --border: 0.92 0.004 286.32;
+  --input: 0.92 0.004 286.32;
+  --ring: 0.723 0.219 149.579;
+
+  --chart-1: 0.646 0.222 41.116;
+  --chart-2: 0.6 0.118 184.704;
+  --chart-3: 0.398 0.07 227.392;
+  --chart-4: 0.828 0.189 84.429;
+  --chart-5: 0.769 0.188 70.08;
+
+  --sidebar: 0.985 0 0;
+  --sidebar-foreground: 0.141 0.005 285.823;
+  --sidebar-primary: 0.723 0.219 149.579;
+  --sidebar-primary-foreground: 0.982 0.018 155.826;
+  --sidebar-accent: 0.967 0.001 286.375;
+  --sidebar-accent-foreground: 0.21 0.006 285.885;
+  --sidebar-border: 0.92 0.004 286.32;
+  --sidebar-ring: 0.723 0.219 149.579;
+}
+
+.dark {
+  --background: 0.141 0.005 285.823;
+  --foreground: 0.985 0 0;
+  --card: 0.21 0.006 285.885;
+  --card-foreground: 0.985 0 0;
+  --popover: 0.21 0.006 285.885;
+  --popover-foreground: 0.985 0 0;
+
+  --primary: 0.696 0.17 162.48;
+  --primary-foreground: 0.393 0.095 152.535;
+
+  --secondary: 0.274 0.006 286.033;
+  --secondary-foreground: 0.985 0 0;
+
+  --muted: 0.274 0.006 286.033;
+  --muted-foreground: 0.705 0.015 286.067;
+
+  --accent: 0.274 0.006 286.033;
+  --accent-foreground: 0.985 0 0;
+
+  --destructive: 0.704 0.191 22.216;
+
+  --border: 1 0 0 / 0.1;
+  --input: 1 0 0 / 0.15;
+  --ring: 0.527 0.154 150.069;
+
+  --chart-1: 0.488 0.243 264.376;
+  --chart-2: 0.696 0.17 162.48;
+  --chart-3: 0.769 0.188 70.08;
+  --chart-4: 0.627 0.265 303.9;
+  --chart-5: 0.645 0.246 16.439;
+
+  --sidebar: 0.21 0.006 285.885;
+  --sidebar-foreground: 0.985 0 0;
+  --sidebar-primary: 0.696 0.17 162.48;
+  --sidebar-primary-foreground: 0.393 0.095 152.535;
+  --sidebar-accent: 0.274 0.006 286.033;
+  --sidebar-accent-foreground: 0.985 0 0;
+  --sidebar-border: 1 0 0 / 0.1;
+  --sidebar-ring: 0.527 0.154 150.069;
+}
+
+html,
+body,
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+body {
+  overflow: visible;
 }
