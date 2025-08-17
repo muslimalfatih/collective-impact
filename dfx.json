@@ -1,36 +1,26 @@
 {
+  "dfx": "0.28.0",
+  "version": 1,
   "canisters": {
     "backend": {
       "type": "motoko",
-      "main": "dfx/canisters/dex/main.mo",
-      "declarations": {
-        "node_compatibility": true,
-        "output": "src/declarations/backend"
-      }
+      "main": "src/backend/main.mo"
     },
-    "assets": {
-      "dependencies": [
-        "backend"
-      ],
-      "frontend": {
-        "entrypoint": "out/index.html"
-      },
-      "source": [
-        "out/"
-      ],
-      "type": "assets"
-    }
-  },
-  "defaults": {
-    "build": {
-      "packtool": "",
-      "args": ""
+    "frontend": {
+      "type": "assets",
+      "source": ["src/frontend/dist"],
+      "build": ["pnpm -C src/frontend install", "pnpm -C src/frontend build"]
     }
   },
   "networks": {
     "local": {
-      "bind": "127.0.0.1:4943"
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
     }
   },
-  "version": 1
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  }
 }
